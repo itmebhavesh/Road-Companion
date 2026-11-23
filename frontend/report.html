@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Report a road hazard in Gujarat: pick the location on the map or use your current location.">
+  <meta name="theme-color" content="#07111f">
+  <title>Report a hazard · Road Companion</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+</head>
+
+<body>
+  <noscript><p class="noscript">Road Companion needs JavaScript. Please enable it and reload.</p></noscript>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <div class="app">
+    <aside class="sidebar">
+      <a class="brand" href="index.html">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span>
+          <span class="brand-name">Road Companion</span>
+          <span class="brand-tag">Navigate Smart. Report Hazards. Travel Safe.</span>
+        </span>
+      </a>
+
+      <nav class="side-nav" aria-label="Main">
+        <a href="index.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3h8v10H3zM13 3h8v6h-8zM13 11h8v10h-8zM3 15h8v6H3z"/></svg><span>Dashboard</span></a>
+        <a href="report.html" aria-current="page"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 2 20h20zM12 10v4M12 17v.5"/></svg><span>Report</span></a>
+        <a href="reports.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13M3 6h.5M3 12h.5M3 18h.5"/></svg><span>Reports</span></a>
+        <a href="navigate.html"><svg viewBox="0 0 24 24" aria-hidden="true"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg><span>Navigate</span></a>
+        <a href="login.html" id="navAuth"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4H5v16h4M16 8l4 4-4 4M20 12H9"/></svg><span id="navAuthLabel">Log in</span></a>
+      </nav>
+
+      <p id="sideUser" class="side-user" role="status">Checking session…</p>
+    </aside>
+
+    <main id="main" class="content">
+      <header class="page-head">
+        <div>
+          <h1>Report a hazard</h1>
+          <p>Describe the problem and mark where it is. New reports start as Pending.</p>
+        </div>
+      </header>
+
+      <div class="report-grid">
+        <section class="card" aria-labelledby="formTitle">
+          <h2 id="formTitle">Hazard details</h2>
+
+          <div id="reportGate" class="notice" hidden>
+            <p>Log in to submit a report. Anyone can browse the map and reports.</p>
+            <a id="gateLink" class="btn btn-primary btn-small" href="login.html?next=report.html">Log in</a>
+          </div>
+
+          <form id="reportForm" novalidate>
+            <label for="reportTitle">Title
+              <input id="reportTitle" name="title" type="text" maxlength="120" placeholder="Deep pothole near the junction" required>
+            </label>
+
+            <label for="category">Category
+              <select id="category" name="category" required>
+                <option value="">Select category</option>
+                <option value="Pothole">Pothole</option>
+                <option value="Waterlogging">Waterlogging</option>
+                <option value="Damaged Road">Damaged Road</option>
+                <option value="Street Light">Street Light</option>
+                <option value="Traffic Signal">Traffic Signal</option>
+                <option value="Other">Other</option>
+              </select>
+            </label>
+
+            <label for="city">City / District
+              <select id="city" name="city">
+                <option value="">Auto-detect from location</option>
+              </select>
+            </label>
+
+            <label for="description">Description
+              <textarea id="description" name="description" maxlength="1000" placeholder="What is unsafe, and where should a crew look?" required></textarea>
+            </label>
+
+            <div class="coord-row">
+              <label for="latitude">Latitude
+                <input id="latitude" name="latitude" type="number" inputmode="decimal" step="any" placeholder="23.0225" required>
+              </label>
+              <label for="longitude">Longitude
+                <input id="longitude" name="longitude" type="number" inputmode="decimal" step="any" placeholder="72.5714" required>
+              </label>
+            </div>
+
+            <div class="actions">
+              <button id="locationBtn" class="btn btn-secondary" type="button">Use my location</button>
+              <button id="reportBtn" class="btn btn-primary" type="submit">Submit report</button>
+            </div>
+          </form>
+          <p id="reportMessage" class="message" role="status"></p>
+          <a class="link-more" href="reports.html">View all reports</a>
+        </section>
+
+        <section class="card map-card" aria-labelledby="pickTitle">
+          <div class="section-head">
+            <div>
+              <h2 id="pickTitle">Choose the location</h2>
+              <p>Click the map to drop the pin, or use your current location.</p>
+            </div>
+          </div>
+          <div id="map" role="application" aria-label="Map for choosing the hazard location"></div>
+          <p id="mapMessage" class="message" role="status"></p>
+        </section>
+      </div>
+      <footer class="footer">
+        <p>Community reports start as Pending. A new report is never treated as officially verified.</p>
+        <p>Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors.</p>
+      </footer>
+    </main>
+  </div>
+
+  <script type="module" src="report.js"></script>
+</body>
+</html>

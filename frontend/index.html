@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Road Companion dashboard: live road hazard statistics, public map and recent reports across Gujarat.">
+  <meta name="theme-color" content="#07111f">
+  <title>Dashboard · Road Companion</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css">
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+</head>
+
+<body>
+  <noscript><p class="noscript">Road Companion needs JavaScript. Please enable it and reload.</p></noscript>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <div class="app">
+    <aside class="sidebar">
+      <a class="brand" href="index.html">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span>
+          <span class="brand-name">Road Companion</span>
+          <span class="brand-tag">Navigate Smart. Report Hazards. Travel Safe.</span>
+        </span>
+      </a>
+
+      <nav class="side-nav" aria-label="Main">
+        <a href="index.html" aria-current="page"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3h8v10H3zM13 3h8v6h-8zM13 11h8v10h-8zM3 15h8v6H3z"/></svg><span>Dashboard</span></a>
+        <a href="report.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 2 20h20zM12 10v4M12 17v.5"/></svg><span>Report</span></a>
+        <a href="reports.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13M3 6h.5M3 12h.5M3 18h.5"/></svg><span>Reports</span></a>
+        <a href="navigate.html"><svg viewBox="0 0 24 24" aria-hidden="true"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg><span>Navigate</span></a>
+        <a href="login.html" id="navAuth"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4H5v16h4M16 8l4 4-4 4M20 12H9"/></svg><span id="navAuthLabel">Log in</span></a>
+      </nav>
+
+      <p id="sideUser" class="side-user" role="status">Checking session…</p>
+    </aside>
+
+    <main id="main" class="content">
+      <header class="page-head">
+        <div>
+          <h1>Dashboard</h1>
+          <p>Live road hazard reports across Gujarat.</p>
+        </div>
+        <a class="btn btn-primary" href="report.html">Report a hazard</a>
+      </header>
+
+      <dl class="stats" aria-label="Report totals">
+        <div class="stat stat-total"><dt>Total reports</dt><dd id="statTotal">—</dd></div>
+        <div class="stat stat-pending"><dt>Pending</dt><dd id="statPending">—</dd></div>
+        <div class="stat stat-verified"><dt>Verified</dt><dd id="statVerified">—</dd></div>
+        <div class="stat stat-progress"><dt>In progress</dt><dd id="statProgress">—</dd></div>
+        <div class="stat stat-resolved"><dt>Resolved</dt><dd id="statResolved">—</dd></div>
+      </dl>
+
+      <div class="dash-grid">
+        <section id="mapSection" class="card map-card" aria-labelledby="mapTitle">
+          <div class="section-head">
+            <div>
+              <h2 id="mapTitle">Road hazard map</h2>
+              <p>Layer switcher, clustering and live hazard markers across Gujarat.</p>
+            </div>
+          </div>
+
+          <div class="map-search-row">
+            <select id="mapCityJump" aria-label="Jump to Gujarat city">
+              <option value="">Jump to City…</option>
+            </select>
+            <input id="mapSearchInput" type="text" placeholder="Filter by title, street, or category…" aria-label="Search reports on map">
+          </div>
+
+          <div class="map-filter-bar" role="group" aria-label="Filter markers by report status">
+            <button class="filter-pill active" type="button" data-status="">All</button>
+            <button class="filter-pill" type="button" data-status="Pending">Pending</button>
+            <button class="filter-pill" type="button" data-status="Verified">Verified</button>
+            <button class="filter-pill" type="button" data-status="In Progress">In Progress</button>
+            <button class="filter-pill" type="button" data-status="Resolved">Resolved</button>
+          </div>
+
+          <div id="map" role="application" aria-label="Map of road hazard reports"></div>
+          <p id="mapMessage" class="message" role="status"></p>
+        </section>
+
+        <div class="side-col">
+          <section class="card" aria-labelledby="recentTitle">
+            <div class="section-head">
+              <div>
+                <h2 id="recentTitle">Recent reports</h2>
+                <p>Latest five submissions.</p>
+              </div>
+              <button id="refreshBtn" class="btn btn-secondary btn-small" type="button">Refresh</button>
+            </div>
+            <p id="recentMessage" class="message" role="status">Loading reports…</p>
+            <div id="recentList" class="recent-list"></div>
+            <a class="link-more" href="reports.html">View all reports</a>
+          </section>
+
+          <section class="card" aria-labelledby="legendTitle">
+            <h2 id="legendTitle">Map legend</h2>
+            <ul class="legend">
+              <li><span class="dot dot-pending"></span>Pending</li>
+              <li><span class="dot dot-verified"></span>Verified</li>
+              <li><span class="dot dot-progress"></span>In Progress</li>
+              <li><span class="dot dot-resolved"></span>Resolved</li>
+            </ul>
+          </section>
+        </div>
+      </div>
+      <footer class="footer">
+        <p>Community reports start as Pending. A new report is never treated as officially verified.</p>
+        <p>Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors.</p>
+      </footer>
+    </main>
+  </div>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>

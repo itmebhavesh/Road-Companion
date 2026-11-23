@@ -1,0 +1,250 @@
+/* Login and signup pages. Loaded after style.css, which supplies the theme
+   tokens, topbar, buttons, form fields and .message styles. */
+
+.auth-shell {
+  width: min(1080px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 40px 0 56px;
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(320px, 0.9fr);
+  gap: 56px;
+  align-items: center;
+  min-height: calc(100vh - 76px);
+}
+
+/* Topbar variant: brand only */
+.brand-name {
+  display: block;
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: #fff;
+}
+
+.brand-tag {
+  display: block;
+  color: #c9d7ea;
+  font-size: 0.84rem;
+}
+
+/* Left-hand pitch */
+.auth-pitch .eyebrow { color: var(--gold); }
+
+.pitch-title {
+  max-width: 14ch;
+  color: #fff;
+  font-size: clamp(2.1rem, 4.6vw, 3.4rem);
+  font-weight: 750;
+  line-height: 1.06;
+  letter-spacing: -0.045em;
+}
+
+.pitch-title em {
+  font-style: normal;
+  color: var(--gold);
+}
+
+.pitch-copy {
+  max-width: 46ch;
+  margin-top: 16px;
+  color: #c9d7ea;
+  line-height: 1.6;
+}
+
+.auth-points {
+  display: grid;
+  gap: 12px;
+  margin: 26px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.auth-points li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #dbe6f5;
+  font-size: 0.95rem;
+}
+
+.auth-points li::before {
+  content: "";
+  flex: 0 0 auto;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--red);
+  box-shadow: 0 0 0 3px rgba(212, 166, 74, 0.4);
+}
+
+/* Form card */
+.auth-card {
+  position: relative;
+  overflow: hidden;
+  padding: 32px 28px 26px;
+}
+
+.auth-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--red), var(--gold));
+}
+
+.auth-card h1 {
+  font-size: 1.55rem;
+  letter-spacing: -0.035em;
+  color: var(--ink);
+}
+
+.auth-card form { margin-top: 18px; }
+
+.field {
+  display: grid;
+  gap: 6px;
+}
+
+.field label {
+  color: var(--ink);
+  font-size: 0.84rem;
+  font-weight: 700;
+}
+
+.field-label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.link-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--gold-light);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.link-btn:hover {
+  color: #fff;
+}
+
+/* Modal styles for Forgot Password */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: rgba(4, 9, 18, 0.78);
+  backdrop-filter: blur(8px);
+}
+
+.modal-dialog {
+  width: min(440px, 100%);
+  background: linear-gradient(180deg, var(--panel-2), var(--panel));
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+  padding: 28px 24px;
+  position: relative;
+}
+
+.modal-dialog::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--gold), var(--red));
+}
+
+.modal-dialog h2 {
+  font-size: 1.35rem;
+  letter-spacing: -0.03em;
+  color: #fff;
+  margin-bottom: 8px;
+}
+
+.modal-dialog p {
+  color: var(--muted);
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.modal-actions .btn {
+  flex: 1;
+}
+
+.pw-wrap { position: relative; }
+
+.pw-wrap input { padding-right: 76px; }
+
+.pw-toggle {
+  position: absolute;
+  top: 50%;
+  right: 6px;
+  transform: translateY(-50%);
+  min-width: 56px;
+  height: 36px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  color: var(--gold-light);
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.pw-toggle:hover { background: var(--gold-soft); }
+
+.pw-toggle:focus-visible {
+  outline: 3px solid rgba(212, 166, 74, 0.55);
+}
+
+.auth-card .btn-primary {
+  width: 100%;
+  min-height: 48px;
+  margin-top: 4px;
+}
+
+.auth-switch {
+  margin-top: 18px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+.auth-switch a {
+  color: var(--gold-light);
+  font-weight: 700;
+}
+
+@media (max-width: 860px) {
+  .auth-shell {
+    grid-template-columns: 1fr;
+    gap: 28px;
+    padding: 28px 0 40px;
+    min-height: 0;
+  }
+
+  .pitch-title { max-width: none; }
+  .auth-points { display: none; }
+}
+
+@media (max-width: 480px) {
+  .auth-card { padding: 28px 18px 22px; }
+  .auth-shell { width: min(100% - 24px, 1080px); }
+}

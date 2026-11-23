@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Log in to Road Companion to view the road hazard map and report problems.">
+  <meta name="theme-color" content="#07111f">
+  <title>Log in · Road Companion</title>
+
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="auth.css">
+</head>
+
+<body data-page="login">
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="topbar">
+    <a class="brand" href="login.html">
+      <span class="brand-mark" aria-hidden="true"></span>
+      <span>
+        <span class="brand-name">Road Companion</span>
+        <span class="brand-tag">Navigate Smart. Report Hazards. Travel Safe.</span>
+      </span>
+    </a>
+  </header>
+
+  <main id="main" class="auth-shell">
+    <section class="auth-pitch" aria-label="About Road Companion">
+      <p class="eyebrow">Gujarat civic safety</p>
+      <p class="pitch-title">Know the road. <em>Report the risk.</em></p>
+      <p class="pitch-copy">
+        A citizen-powered map of potholes, flooding, damaged roads and signal
+        faults across Gujarat.
+      </p>
+      <ul class="auth-points">
+        <li>Browse live road hazard reports on a public map</li>
+        <li>Report a problem at your exact location</li>
+        <li>Follow each report from Pending to Resolved</li>
+      </ul>
+    </section>
+
+    <section class="card auth-card" aria-labelledby="authTitle">
+      <h1 id="authTitle">Welcome back</h1>
+      <p>Log in to submit road hazard reports. The map and reports are open to everyone.</p>
+
+      <form id="authForm" novalidate>
+        <div class="field">
+          <label for="email">Email</label>
+          <input id="email" name="email" type="email" autocomplete="email" maxlength="120" placeholder="you@email.com" required>
+        </div>
+
+        <div class="field">
+          <div class="field-label-row">
+            <label for="password">Password</label>
+            <button id="forgotPwBtn" class="link-btn" type="button" aria-haspopup="dialog">Forgot password?</button>
+          </div>
+          <div class="pw-wrap">
+            <input id="password" name="password" type="password" autocomplete="current-password" minlength="6" maxlength="128" placeholder="Your password" required>
+            <button id="pwToggle" class="pw-toggle" type="button" aria-controls="password" aria-pressed="false" aria-label="Show password">Show</button>
+          </div>
+        </div>
+
+        <button id="submitBtn" class="btn btn-primary" type="submit">Log in</button>
+      </form>
+
+      <p id="authMessage" class="message" role="status" aria-live="polite"></p>
+
+      <p class="auth-switch">New to Road Companion? <a href="signup.html">Create an account</a></p>
+      <p class="auth-switch"><a href="index.html">Continue to the public dashboard</a></p>
+    </section>
+
+    <!-- Forgot Password Modal -->
+    <div id="forgotModal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modalTitle" hidden>
+      <div class="modal-dialog">
+        <h2 id="modalTitle">Reset your password</h2>
+        <p>Enter your registered account email. Firebase will send you a password reset link.</p>
+
+        <form id="forgotForm" novalidate>
+          <div class="field" style="margin-top: 14px;">
+            <label for="resetEmail">Registered email</label>
+            <input id="resetEmail" name="resetEmail" type="email" autocomplete="email" maxlength="120" placeholder="you@email.com" required>
+          </div>
+
+          <div class="modal-actions">
+            <button id="cancelResetBtn" class="btn btn-secondary" type="button">Cancel</button>
+            <button id="sendResetBtn" class="btn btn-primary" type="submit">Send reset link</button>
+          </div>
+        </form>
+
+        <p id="resetMessage" class="message" role="status" aria-live="polite"></p>
+      </div>
+    </div>
+  </main>
+
+  <script type="module" src="auth-pages.js"></script>
+</body>
+</html>

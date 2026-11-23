@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Create a Road Companion account to report road hazards in Gujarat.">
+  <meta name="theme-color" content="#07111f">
+  <title>Create account · Road Companion</title>
+
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="auth.css">
+</head>
+
+<body data-page="signup">
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="topbar">
+    <a class="brand" href="login.html">
+      <span class="brand-mark" aria-hidden="true"></span>
+      <span>
+        <span class="brand-name">Road Companion</span>
+        <span class="brand-tag">Navigate Smart. Report Hazards. Travel Safe.</span>
+      </span>
+    </a>
+  </header>
+
+  <main id="main" class="auth-shell">
+    <section class="auth-pitch" aria-label="About Road Companion">
+      <p class="eyebrow">Gujarat civic safety</p>
+      <p class="pitch-title">Join the road <em>watch.</em></p>
+      <p class="pitch-copy">
+        Create a free account to report hazards where you see them and help
+        make Gujarat's roads safer for everyone.
+      </p>
+      <ul class="auth-points">
+        <li>Takes less than a minute</li>
+        <li>New reports always start as Pending until reviewed</li>
+        <li>Your report appears on the shared public map</li>
+      </ul>
+    </section>
+
+    <section class="card auth-card" aria-labelledby="authTitle">
+      <h1 id="authTitle">Create your account</h1>
+      <p>Sign up with your email to start reporting road hazards.</p>
+
+      <form id="authForm" novalidate>
+        <div class="field">
+          <label for="email">Email</label>
+          <input id="email" name="email" type="email" autocomplete="email" maxlength="120" placeholder="you@email.com" required>
+        </div>
+
+        <div class="field">
+          <label for="password">Password</label>
+          <div class="pw-wrap">
+            <input id="password" name="password" type="password" autocomplete="new-password" minlength="6" maxlength="128" placeholder="At least 6 characters" required>
+            <button id="pwToggle" class="pw-toggle" type="button" aria-controls="password confirmPassword" aria-pressed="false" aria-label="Show password">Show</button>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="confirmPassword">Confirm password</label>
+          <input id="confirmPassword" name="confirmPassword" type="password" autocomplete="new-password" minlength="6" maxlength="128" placeholder="Repeat your password" required>
+        </div>
+
+        <button id="submitBtn" class="btn btn-primary" type="submit">Create account</button>
+      </form>
+
+      <p id="authMessage" class="message" role="status" aria-live="polite"></p>
+
+      <p class="auth-switch">Already have an account? <a href="login.html">Log in</a></p>
+      <p class="auth-switch"><a href="index.html">Continue to the public dashboard</a></p>
+    </section>
+  </main>
+
+  <script type="module" src="auth-pages.js"></script>
+</body>
+</html>

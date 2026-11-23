@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Road Companion Admin Panel: 3-tier role-based access control, report moderation, dynamic analytics and audit logs.">
+  <meta name="theme-color" content="#07111f">
+  <title>Admin Panel · Road Companion</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+</head>
+
+<body>
+  <noscript><p class="noscript">Road Companion needs JavaScript. Please enable it and reload.</p></noscript>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <div class="app">
+    <aside class="sidebar">
+      <a class="brand" href="index.html">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span>
+          <span class="brand-name">Road Companion</span>
+          <span class="brand-tag">Navigate Smart. Report Hazards. Travel Safe.</span>
+        </span>
+      </a>
+
+      <nav class="side-nav" aria-label="Main">
+        <a href="index.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3h8v10H3zM13 3h8v6h-8zM13 11h8v10h-8zM3 15h8v6H3z"/></svg><span>Dashboard</span></a>
+        <a href="report.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 2 20h20zM12 10v4M12 17v.5"/></svg><span>Report</span></a>
+        <a href="reports.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13M3 6h.5M3 12h.5M3 18h.5"/></svg><span>Reports</span></a>
+        <a href="navigate.html"><svg viewBox="0 0 24 24" aria-hidden="true"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg><span>Navigate</span></a>
+        <a href="admin.html" aria-current="page"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg><span>Admin Panel</span></a>
+        <a href="login.html" id="navAuth"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4H5v16h4M16 8l4 4-4 4M20 12H9"/></svg><span id="navAuthLabel">Log in</span></a>
+      </nav>
+
+      <p id="sideUser" class="side-user" role="status">Checking session…</p>
+    </aside>
+
+    <main id="main" class="content">
+      <header class="page-head">
+        <div>
+          <h1>Administration & Control</h1>
+          <p>Role-based citizen hazard moderation, verification, and audit logging.</p>
+        </div>
+      </header>
+
+      <!-- Checking session state -->
+      <div id="adminChecking" class="card" style="text-align: center; padding: 40px 20px;">
+        <p style="font-size: 1.1rem; color: var(--gold-light);">Checking administrative authorization…</p>
+      </div>
+
+      <!-- Access Denied / Login Gate -->
+      <div id="adminGate" class="card" hidden style="max-width: 680px; margin: 20px auto; padding: 32px 28px;">
+        <h2 id="gateTitle" style="color: #f87171; font-size: 1.4rem;">Restricted Admin Area</h2>
+        <p id="gateMessage" style="margin-top: 10px; line-height: 1.6;">
+          You must be signed in with an authorized administrative account (Super Admin, City Admin, or Moderator) to access this console.
+        </p>
+
+        <div style="background: var(--panel-2); border: 1px solid var(--line); border-radius: 12px; padding: 16px; margin: 20px 0;">
+          <strong style="color: var(--gold); display: block; margin-bottom: 8px;">Platform Roles:</strong>
+          <ul style="margin: 0; padding-left: 20px; font-size: 0.88rem; color: var(--muted); line-height: 1.6;">
+            <li><strong>Super Admin:</strong> Full platform access, user management, global reports & logs.</li>
+            <li><strong>City Admin:</strong> Review, verify, and resolve reports for assigned Gujarat cities.</li>
+            <li><strong>Moderator:</strong> Triage citizen reports, flag duplicates/spam, recommend verification.</li>
+          </ul>
+        </div>
+
+        <div id="gateActions" style="display: flex; gap: 12px; margin-top: 20px;">
+          <a id="gateLoginBtn" class="btn btn-primary" href="login.html?next=admin.html">Sign in with Admin Account</a>
+          <a class="btn btn-secondary" href="index.html">Return to Public Dashboard</a>
+        </div>
+      </div>
+
+      <!-- Main Authenticated Admin Area -->
+      <div id="adminApp" hidden>
+        <!-- Admin Identity Pill -->
+        <div class="admin-header-badge">
+          <span>Active Role: <span id="adminRoleBadge" class="role-badge role-citizen">—</span></span>
+          <span>Logged in as: <strong id="adminUserEmail" style="color: #fff;">—</strong></span>
+          <span id="adminCitiesWrap" hidden>Assigned Jurisdiction: <strong id="adminAssignedCities" style="color: var(--gold-light);">—</strong></span>
+          <button id="adminRefreshBtn" class="btn btn-secondary btn-small" type="button" style="margin-left: auto;">
+            Refresh Data
+          </button>
+        </div>
+
+        <!-- Admin Tab Navigation -->
+        <div class="admin-tabs" role="tablist">
+          <button id="tabReportsBtn" class="admin-tab-btn active" type="button" role="tab" aria-selected="true">
+            Report Management
+          </button>
+          <button id="tabAnalyticsBtn" class="admin-tab-btn" type="button" role="tab" aria-selected="false">
+            Analytics & Charts
+          </button>
+          <button id="tabAuditBtn" class="admin-tab-btn" type="button" role="tab" aria-selected="false">
+            Audit Logs
+          </button>
+          <button id="tabUsersBtn" class="admin-tab-btn" type="button" role="tab" aria-selected="false">
+            User Management
+          </button>
+        </div>
+
+        <p id="adminStatusMessage" class="message" role="status"></p>
+
+        <!-- TAB 1: Report Management -->
+        <section id="sectionReports" role="tabpanel">
+          <div class="card" style="margin-bottom: 16px;">
+            <div class="admin-filter-bar">
+              <input id="repSearchInput" type="text" placeholder="Search title, description, or ID…" aria-label="Search reports">
+              <select id="repStatusFilter" aria-label="Filter status">
+                <option value="">All Statuses</option>
+                <option value="Pending">Pending</option>
+                <option value="Verified">Verified</option>
+                <option value="In Progress">In Progress</option>
+                <option value="Resolved">Resolved</option>
+              </select>
+              <select id="repCityFilter" aria-label="Filter city">
+                <option value="">All Cities</option>
+              </select>
+              <select id="repCategoryFilter" aria-label="Filter category">
+                <option value="">All Categories</option>
+                <option value="Pothole">Pothole</option>
+                <option value="Waterlogging">Waterlogging</option>
+                <option value="Damaged Road">Damaged Road</option>
+                <option value="Street Light">Street Light</option>
+                <option value="Traffic Signal">Traffic Signal</option>
+                <option value="Other">Other</option>
+              </select>
+              <select id="repFlagFilter" aria-label="Filter flags">
+                <option value="">All Reports</option>
+                <option value="flagged">Any Flagged Reports</option>
+                <option value="duplicate">Flagged Duplicate</option>
+                <option value="suspicious">Flagged Suspicious</option>
+                <option value="inappropriate">Flagged Inappropriate</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table class="admin-table" aria-label="Citizen road hazard reports">
+              <thead>
+                <tr>
+                  <th>Date & Time</th>
+                  <th>Title & City</th>
+                  <th>Category</th>
+                  <th>Status</th>
+                  <th>Flags</th>
+                  <th>Reporter UID</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="reportsTableBody">
+                <tr><td colspan="7" style="text-align: center; color: var(--muted);">Loading reports…</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p id="reportsTableCount" style="margin-top: 10px; font-size: 0.84rem; color: var(--muted);"></p>
+        </section>
+
+        <!-- TAB 2: Analytics & Charts -->
+        <section id="sectionAnalytics" role="tabpanel" hidden>
+          <div class="card" style="margin-bottom: 18px;">
+            <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px;">
+              <div>
+                <h2 style="font-size: 1.15rem; color: #fff;">Dynamic Platform Analytics</h2>
+                <p>Live metrics computed directly from verified Firestore report records.</p>
+              </div>
+
+              <!-- Time Filters -->
+              <div class="map-filter-bar" id="analyticsRangePills" style="margin-bottom: 0;">
+                <button class="filter-pill" type="button" data-range="today">Today</button>
+                <button class="filter-pill active" type="button" data-range="7d">Last 7 Days</button>
+                <button class="filter-pill" type="button" data-range="30d">Last 30 Days</button>
+                <button class="filter-pill" type="button" data-range="6m">Last 6 Months</button>
+                <button class="filter-pill" type="button" data-range="custom">Custom</button>
+              </div>
+            </div>
+
+            <!-- Custom date range inputs -->
+            <div id="customDateRow" style="display: none; margin-top: 14px; gap: 12px; align-items: center; flex-wrap: wrap;">
+              <label style="display: flex; align-items: center; gap: 6px; font-size: 0.84rem;">
+                From: <input id="customStartDate" type="date" style="padding: 6px 10px; width: auto;">
+              </label>
+              <label style="display: flex; align-items: center; gap: 6px; font-size: 0.84rem;">
+                To: <input id="customEndDate" type="date" style="padding: 6px 10px; width: auto;">
+              </label>
+              <button id="applyCustomDateBtn" class="btn btn-secondary btn-small" type="button">Apply Range</button>
+            </div>
+          </div>
+
+          <!-- Dynamic Stat Summary Cards -->
+          <dl class="stats" aria-label="Filtered totals">
+            <div class="stat stat-total"><dt>Period Total</dt><dd id="anaTotal">0</dd></div>
+            <div class="stat stat-pending"><dt>Pending</dt><dd id="anaPending">0</dd></div>
+            <div class="stat stat-verified"><dt>Verified</dt><dd id="anaVerified">0</dd></div>
+            <div class="stat stat-progress"><dt>In Progress</dt><dd id="anaProgress">0</dd></div>
+            <div class="stat stat-resolved"><dt>Resolved</dt><dd id="anaResolved">0</dd></div>
+          </dl>
+
+          <!-- 5 Dynamic Charts -->
+          <div class="charts-grid">
+            <div class="chart-card">
+              <h3>Report Status Distribution</h3>
+              <p>Breakdown across Pending, Verified, In Progress, and Resolved.</p>
+              <div class="chart-container">
+                <canvas id="chartStatus"></canvas>
+              </div>
+            </div>
+
+            <div class="chart-card">
+              <h3>Category-Wise Breakdown</h3>
+              <p>Frequency of reported hazards by category.</p>
+              <div class="chart-container">
+                <canvas id="chartCategories"></canvas>
+              </div>
+            </div>
+
+            <div class="chart-card" style="grid-column: 1 / -1;">
+              <h3>Submission Trend Over Time</h3>
+              <p>Daily and weekly volume of citizen submissions in the selected range.</p>
+              <div class="chart-container" style="max-height: 280px;">
+                <canvas id="chartTimeline"></canvas>
+              </div>
+            </div>
+
+            <div class="chart-card">
+              <h3>Pending vs. Resolved Comparison</h3>
+              <p>Comparing incoming unverified reports against closed resolutions.</p>
+              <div class="chart-container">
+                <canvas id="chartComparison"></canvas>
+              </div>
+            </div>
+
+            <div class="chart-card">
+              <h3>City-Wise Distribution (Gujarat)</h3>
+              <p>Hazard reports by municipal jurisdiction.</p>
+              <div class="chart-container">
+                <canvas id="chartCities"></canvas>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- TAB 3: Audit Logs -->
+        <section id="sectionAudit" role="tabpanel" hidden>
+          <div class="card" style="margin-bottom: 16px;">
+            <h2 style="font-size: 1.1rem; color: #fff;">Administrative Audit Trail</h2>
+            <p>Immutable log of status changes, moderation actions, and permission updates.</p>
+          </div>
+
+          <div class="table-wrap">
+            <table class="admin-table" aria-label="System audit log records">
+              <thead>
+                <tr>
+                  <th>Timestamp</th>
+                  <th>Action</th>
+                  <th>Admin Email & Role</th>
+                  <th>Target / Report ID</th>
+                  <th>Status Transition</th>
+                  <th>Notes</th>
+                </tr>
+              </thead>
+              <tbody id="auditTableBody">
+                <tr><td colspan="6" style="text-align: center; color: var(--muted);">Loading audit logs…</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- TAB 4: User Management (Super Admin) -->
+        <section id="sectionUsers" role="tabpanel" hidden>
+          <div class="card" style="margin-bottom: 16px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+              <div>
+                <h2 style="font-size: 1.1rem; color: #fff;">User & Role Management</h2>
+                <p>Assign administrative roles and manage City Admin municipal jurisdiction.</p>
+              </div>
+              <button id="assignRoleBtn" class="btn btn-primary btn-small" type="button">
+                + Assign / Edit Role
+              </button>
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table class="admin-table" aria-label="Registered users and roles">
+              <thead>
+                <tr>
+                  <th>User ID</th>
+                  <th>Email</th>
+                  <th>Assigned Role</th>
+                  <th>City Jurisdiction</th>
+                  <th>Account Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="usersTableBody">
+                <tr><td colspan="6" style="text-align: center; color: var(--muted);">Loading user records…</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+
+      <!-- MODAL 1: Update Status Dialog -->
+      <div id="statusModal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="statusModalTitle" hidden>
+        <div class="modal-dialog">
+          <h2 id="statusModalTitle">Update Report Status</h2>
+          <p id="statusReportTitle" style="color: #fff; font-weight: 700; margin: 4px 0 10px;">—</p>
+
+          <form id="statusForm" novalidate>
+            <div class="field">
+              <label for="newStatusSelect">New Status</label>
+              <select id="newStatusSelect" required>
+                <option value="Pending">Pending</option>
+                <option value="Verified">Verified</option>
+                <option value="In Progress">In Progress</option>
+                <option value="Resolved">Resolved</option>
+              </select>
+            </div>
+
+            <div class="field" style="margin-top: 12px;">
+              <label for="statusNotes">Audit Reason / Field Notes</label>
+              <textarea id="statusNotes" maxlength="500" placeholder="e.g. Verified by municipal patrol on SG Highway; repair crew dispatched." required></textarea>
+            </div>
+
+            <div style="margin-top: 14px; background: rgba(217, 119, 6, 0.12); border: 1px solid rgba(217, 119, 6, 0.3); border-radius: 8px; padding: 10px;">
+              <label style="display: flex; gap: 8px; align-items: flex-start; font-size: 0.82rem; color: #fde68a; cursor: pointer;">
+                <input id="confirmResolutionCheck" type="checkbox" style="width: auto; margin-top: 3px;" required>
+                <span>I confirm this status reflects verified evidence or field assessment. I will not claim official government completion without validation.</span>
+              </label>
+            </div>
+
+            <div class="modal-actions">
+              <button id="cancelStatusBtn" class="btn btn-secondary" type="button">Cancel</button>
+              <button id="saveStatusBtn" class="btn btn-primary" type="submit">Confirm & Log Status</button>
+            </div>
+          </form>
+          <p id="statusModalMessage" class="message" role="status"></p>
+        </div>
+      </div>
+
+      <!-- MODAL 2: Moderation & Flagging Dialog -->
+      <div id="flagModal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="flagModalTitle" hidden>
+        <div class="modal-dialog">
+          <h2 id="flagModalTitle">Moderate Report</h2>
+          <p id="flagReportTitle" style="color: #fff; font-weight: 700; margin: 4px 0 10px;">—</p>
+
+          <form id="flagForm" novalidate>
+            <div style="display: grid; gap: 10px; margin: 14px 0;">
+              <label style="display: flex; gap: 8px; align-items: center; cursor: pointer;">
+                <input id="flagDuplicate" type="checkbox" style="width: auto;">
+                <span>Mark as Duplicate Report</span>
+              </label>
+              <label style="display: flex; gap: 8px; align-items: center; cursor: pointer;">
+                <input id="flagSuspicious" type="checkbox" style="width: auto;">
+                <span>Flag as Suspicious / False Information</span>
+              </label>
+              <label style="display: flex; gap: 8px; align-items: center; cursor: pointer;">
+                <input id="flagInappropriate" type="checkbox" style="width: auto;">
+                <span>Flag as Inappropriate Content</span>
+              </label>
+            </div>
+
+            <div class="field">
+              <label for="flagNotes">Moderator Notes</label>
+              <textarea id="flagNotes" maxlength="400" placeholder="Reason for flag (e.g. duplicate of report #xME3re, identical photos)"></textarea>
+            </div>
+
+            <div class="modal-actions">
+              <button id="cancelFlagBtn" class="btn btn-secondary" type="button">Cancel</button>
+              <button id="saveFlagBtn" class="btn btn-primary" type="submit">Save Flags</button>
+            </div>
+          </form>
+          <p id="flagModalMessage" class="message" role="status"></p>
+        </div>
+      </div>
+
+      <!-- MODAL 3: User Role Management Dialog (Super Admin) -->
+      <div id="userModal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="userModalTitle" hidden>
+        <div class="modal-dialog">
+          <h2 id="userModalTitle">Assign User Permissions</h2>
+          <form id="userRoleForm" novalidate>
+            <div class="field" style="margin-top: 12px;">
+              <label for="userModalUid">User ID (Auth UID)</label>
+              <input id="userModalUid" type="text" placeholder="Firebase Auth UID" required>
+            </div>
+
+            <div class="field" style="margin-top: 10px;">
+              <label for="userModalRole">Role</label>
+              <select id="userModalRole" required>
+                <option value="citizen">Citizen (Standard user)</option>
+                <option value="moderator">Moderator (Triage & flag)</option>
+                <option value="city_admin">City Admin (Manage city reports)</option>
+                <option value="super_admin">Super Admin (Full access)</option>
+              </select>
+            </div>
+
+            <div id="cityAdminJurisdictionField" class="field" style="margin-top: 10px;">
+              <label for="userModalCities">Assigned Cities (Hold Ctrl/Cmd to select multiple)</label>
+              <select id="userModalCities" multiple size="4" style="height: auto;">
+              </select>
+            </div>
+
+            <div class="field" style="margin-top: 10px;">
+              <label for="userModalStatus">Account Status</label>
+              <select id="userModalStatus">
+                <option value="active">Active</option>
+                <option value="deactivated">Suspended / Deactivated</option>
+              </select>
+            </div>
+
+            <div class="modal-actions">
+              <button id="cancelUserBtn" class="btn btn-secondary" type="button">Cancel</button>
+              <button id="saveUserBtn" class="btn btn-primary" type="submit">Save Permissions</button>
+            </div>
+          </form>
+          <p id="userModalMessage" class="message" role="status"></p>
+        </div>
+      </div>
+
+      <footer class="footer">
+        <p>Road Companion Administration · Secured with Role-Based Access Control & Audit Trails.</p>
+      </footer>
+    </main>
+  </div>
+
+  <script type="module" src="admin.js"></script>
+</body>
+</html>

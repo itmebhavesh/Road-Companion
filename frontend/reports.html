@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Every road hazard report submitted to Road Companion, with status and location.">
+  <meta name="theme-color" content="#07111f">
+  <title>Reports · Road Companion</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <noscript><p class="noscript">Road Companion needs JavaScript. Please enable it and reload.</p></noscript>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <div class="app">
+    <aside class="sidebar">
+      <a class="brand" href="index.html">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span>
+          <span class="brand-name">Road Companion</span>
+          <span class="brand-tag">Navigate Smart. Report Hazards. Travel Safe.</span>
+        </span>
+      </a>
+
+      <nav class="side-nav" aria-label="Main">
+        <a href="index.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3h8v10H3zM13 3h8v6h-8zM13 11h8v10h-8zM3 15h8v6H3z"/></svg><span>Dashboard</span></a>
+        <a href="report.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 2 20h20zM12 10v4M12 17v.5"/></svg><span>Report</span></a>
+        <a href="reports.html" aria-current="page"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13M3 6h.5M3 12h.5M3 18h.5"/></svg><span>Reports</span></a>
+        <a href="navigate.html"><svg viewBox="0 0 24 24" aria-hidden="true"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg><span>Navigate</span></a>
+        <a href="login.html" id="navAuth"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4H5v16h4M16 8l4 4-4 4M20 12H9"/></svg><span id="navAuthLabel">Log in</span></a>
+      </nav>
+
+      <p id="sideUser" class="side-user" role="status">Checking session…</p>
+    </aside>
+
+    <main id="main" class="content">
+      <header class="page-head">
+        <div>
+          <h1>Reports</h1>
+          <p id="reportsCount">All submitted road hazard reports.</p>
+        </div>
+        <div class="toolbar">
+          <label class="filter" for="statusFilter">
+            <span class="sr-only">Filter by status</span>
+            <select id="statusFilter">
+              <option value="">All statuses</option>
+              <option value="Pending">Pending</option>
+              <option value="Verified">Verified</option>
+              <option value="In Progress">In Progress</option>
+              <option value="Resolved">Resolved</option>
+            </select>
+          </label>
+          <button id="refreshBtn" class="btn btn-secondary" type="button">Refresh</button>
+        </div>
+      </header>
+
+      <p id="reportsMessage" class="message" role="status">Loading reports…</p>
+      <div id="reportsList" class="reports-grid"></div>
+      <footer class="footer">
+        <p>Community reports start as Pending. A new report is never treated as officially verified.</p>
+        <p>Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors.</p>
+      </footer>
+    </main>
+  </div>
+
+  <script type="module" src="reports-page.js"></script>
+</body>
+</html>
